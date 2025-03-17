@@ -1,0 +1,62 @@
+Untuk membuat sistem auto-commit di GitHub menggunakan Python, ikuti langkah-langkah berikut:  
+
+### **1. Persiapan**  
+- Pastikan **Git** sudah terinstal di komputer kamu.  
+- Buat repository GitHub yang ingin di-commit secara otomatis.  
+- Dapatkan **Personal Access Token (PAT)** dari GitHub untuk autentikasi.  
+
+### **2. Install Dependensi**  
+Kamu perlu menginstal pustaka `gitpython` untuk mengelola Git melalui Python. Jalankan:  
+```bash
+pip install gitpython
+```
+
+### **3. Buat Script Python**  
+Buat file Python, misalnya `auto_commit.py`, dan tambahkan kode berikut:  
+
+```python
+import os
+import git
+from datetime import datetime
+
+# Konfigurasi
+repo_path = "/path/to/your/repo"  # Ganti dengan path repositori lokal
+commit_message = f"Auto-commit: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+branch = "main"
+
+def auto_commit():
+    repo = git.Repo(repo_path)
+    
+    # Menambahkan semua perubahan
+    repo.git.add(all=True)
+    
+    # Commit perubahan
+    repo.index.commit(commit_message)
+    
+    # Push ke GitHub
+    origin = repo.remote(name="origin")
+    origin.push(refspec=f"{branch}:{branch}")
+
+    print(f"Committed and pushed: {commit_message}")
+
+if __name__ == "__main__":
+    auto_commit()
+```
+Gantilah `repo_path` dengan lokasi direktori repository lokal kamu.  
+
+### **4. Menjadwalkan Auto-Commit (Opsional)**  
+Jika ingin auto-commit berjalan setiap beberapa waktu, bisa menggunakan **cron job (Linux/macOS)** atau **Task Scheduler (Windows)**.  
+
+**Untuk Linux/macOS (Cron Job):**  
+Jalankan `crontab -e` lalu tambahkan:  
+```
+*/30 * * * * /usr/bin/python3 /path/to/auto_commit.py
+```
+Ini akan menjalankan script setiap 30 menit.  
+
+**Untuk Windows (Task Scheduler):**  
+- Buka Task Scheduler > Create Basic Task > Set waktu  
+- Pilih "Start a Program" > Browse > `python.exe`  
+- Tambahkan `auto_commit.py` sebagai argument  
+
+Setelah ini, sistem akan auto-commit secara berkala! 🚀
